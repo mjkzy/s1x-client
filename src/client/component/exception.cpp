@@ -87,8 +87,8 @@ namespace exception
 		void display_error_dialog()
 		{
 			std::string error_str = utils::string::va("Fatal error (0x%08X) at 0x%p.\n"
-			                                          "A minidump has been written.\n\n",
-			                                          exception_data.code, exception_data.address);
+			                                          "A minidump has been written at: %s\n\n",
+			                                          exception_data.code, exception_data.address, crash_name);
 
 			if (!system_check::is_valid())
 			{
@@ -98,6 +98,8 @@ namespace exception
 			{
 				error_str += "Make sure to update your graphics card drivers and install operating system updates!";
 			}
+			
+			error_str += "\nClosing or restarting Steam might also help.";
 
 			utils::thread::suspend_other_threads();
 			show_mouse_cursor();
