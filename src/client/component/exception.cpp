@@ -21,6 +21,8 @@ namespace exception
 {
 	namespace
 	{
+		const char* crash_name;
+		
 		thread_local struct
 		{
 			DWORD code = 0;
@@ -122,11 +124,11 @@ namespace exception
 			{
 				recovery_data.last_recovery = std::chrono::high_resolution_clock::now();
 				++recovery_data.recovery_counts;
-				game::Com_Error(game::ERR_DROP, "Fatal error (0x%08X) at 0x%p.\nA minidump has been written.\n\n"
+				game::Com_Error(game::ERR_DROP, "Fatal error (0x%08X) at 0x%p.\nA minidump has been written at: %s\n\n"
 				                "S1x has tried to recover your game, but it might not run stable anymore.\n\n"
 				                "Make sure to update your graphics card drivers and install operating system updates!\n"
 				                "Closing or restarting Steam might also help.",
-				                exception_data.code, exception_data.address);
+				                exception_data.code, exception_data.address, crash_name);
 			}
 			else
 			{
@@ -191,7 +193,7 @@ namespace exception
 
 		void write_minidump(const LPEXCEPTION_POINTERS exceptioninfo)
 		{
-			const std::string crash_name = utils::string::va("s1x/minidumps/s1x-crash-%d-%s.zip",
+			crash_name = utils::string::va("s1x/minidumps/s1x-crash-%d-%s.zip",
 			                                                 game::environment::get_real_mode(),
 			                                                 get_timestamp().data());
 
