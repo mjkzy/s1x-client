@@ -26,6 +26,8 @@ namespace party
 		} connect_state;
 
 		std::string sv_motd;
+		int sv_maxclients;
+		bool server_private;
 
 		void perform_game_initialization()
 		{
@@ -271,6 +273,21 @@ namespace party
 			const auto* args = "StartServer";
 			game::UI_RunMenuScript(0, &args);
 		}
+	}
+
+	int server_client_count()
+	{
+		return party::sv_maxclients;
+	}
+
+	bool is_private_server()
+	{
+		return party::server_private;
+	}
+
+	game::netadr_s get_target()
+	{
+		return connect_state.host;
 	}
 
 	class component final : public component_interface
@@ -595,6 +612,8 @@ namespace party
 				}
 
 				party::sv_motd = info.get("sv_motd");
+				party::sv_maxclients = std::stoi(info.get("sv_maxclients"));
+				party::server_private = (info.get("isPrivate") == "1" ? 1 : 0);
 
 				connect_to_party(target, mapname, gametype);
 			});
