@@ -10,6 +10,7 @@
 #include "../../../component/logfile.hpp"
 
 #include <utils/string.hpp>
+#include <utils/http.hpp>
 
 namespace scripting::lua
 {
@@ -85,6 +86,7 @@ namespace scripting::lua
 		void setup_entity_type(sol::state& state, event_handler& handler, scheduler& scheduler)
 		{
 			state["level"] = entity{*game::levelEntityId};
+			const entity level{*game::levelEntityId};
 
 			auto vector_type = state.new_usertype<vector>("vector", sol::constructors<vector(float, float, float)>());
 			vector_type["x"] = sol::property(&vector::get_x, &vector::set_x);
@@ -277,6 +279,18 @@ namespace scripting::lua
 				variable.u.uintValue = value.u.u.uintValue;
 
 				return convert(s, variable);
+			};
+			
+			game_type["httpget"] = [&](const game&, const std::string& url, bool async)
+			{
+				if (async)
+				{
+					return scripting::notify(level, "httpget", { utils::http::get_data_async(url).get().value() });
+				}
+				else
+				{
+					return scripting::notify(level, "httpget", { utils::http::get_data(url).value() });
+				}
 			};
 		}
 	}
