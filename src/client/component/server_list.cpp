@@ -363,6 +363,12 @@ namespace server_list
 		server.ping = std::min(now - start_time, 999);
 
 		server.in_game = 1;
+		
+		// remove servers that have invalid player counts. could be spooky
+		if (server.clients > 18 || server.clients < 0 || server.max_clients > 18 || server.max_clients < 18)
+		{
+			return;
+		}
 
 		resize_host_name(server.host_name);
 
